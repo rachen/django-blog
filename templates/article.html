@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}DjBlog | {{ article.title }}{% endblock %}
+
+{% block content %}
+    <h3>{{ article.title }}</h3> by {{ article.author }}
+    <br />
+    Created: {{ article.created }}
+    <br/>
+    Body: {{ article.body|linebreaks }}
+
+    {% if user == article.author %}
+    <a href="{% url edit_article article.id %}">Edit</a> | <a href="{% url delete_article article.id %}">Remove</a>
+    {% endif %}
+    <br />
+
+    <!-- Comments -->
+    {% block comments %}
+        <h4>{{ comment_count }} Comments</h4>
+        {% for comment in comments %}
+            Comment: {{ comment.body }}
+            By: {{ comment.author }}
+            <br />
+        {% empty %}
+            No Comments yet.
+        {% endfor %}
+        <br />
+        <h4>Add A Comment</h4>
+        <form action="" method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Save">
+        </form>
+    {% endblock %}
+
+{% endblock %}
+
+
+
+
+<!-- Comments  -->

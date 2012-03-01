@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+    <h2>Articles</h2>
+    {% for article in articles.object_list %}
+        <h3 style="margin-bottom:5px"><a href="{% url get_article_by_slug article.slug %}">{{ article.title }}
+        -- {{ article.comment_count }} Comments
+        </a></h3>
+        Author: {{ article.author }} <br />
+        Body: {{ article.body }}<br />
+        Created: {{ article.created }}<br />
+        Slug: {{ article.slug }}<br />
+
+        <a href="{% url get_article_by_slug article.slug %}">Add comment</a>
+        {% if user == article.author %}
+            | <a href="{% url edit_article article.id %}">Edit</a>
+            | <a href="{% url delete_article article.id %}">Remove</a>
+        {% endif %}
+        <br />
+        <br />
+    {% empty %}
+        No articles in this blog.
+    {% endfor %}
+
+    <!-- Next/Prev page links  -->
+    {% if articles.object_list and articles.paginator.num_pages > 1 %}
+    <div class="pagination">
+                <span class="step-links">
+                    {% if articles.has_previous %}
+                        <a href= "?page={{ articles.previous_page_number }}">newer entries &lt;&lt; </a>
+                    {% endif %}
+
+                    <span class="current">
+                        &nbsp;Page {{ articles.number }} of {{ articles.paginator.num_pages }}
+                    </span>
+
+                    {% if articles.has_next %}
+                        <a href="?page={{ articles.next_page_number }}"> &gt;&gt; older entries</a>
+                    {% endif %}
+                </span>
+    </div>
+    {% endif %}
+
+{% endblock %}
