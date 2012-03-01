@@ -1,0 +1,4 @@
+Note that this runs on:
+  PostgreSQL 9.x
+
+Currently only runs on Django's built-in webserver. Apache deployment vs wsgi coming soon!
