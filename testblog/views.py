@@ -4,7 +4,7 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth import authenticate, login as auth_login
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, HttpResponseRedirect
 
 from datetime import datetime
 
@@ -89,8 +89,10 @@ def add_article(request):
 
 
 def get_article(request, article_id=None, slug=None):
-    if article_id is not None:
+    if article_id:
         article = Articles.objects.get(id=article_id)
+    elif slug:
+        article = Articles.objects.get(slug=slug)
     return render_to_response("article.html", {'article': article, 'user':request.user})
 
 
@@ -104,10 +106,11 @@ def get_article_by_slug(request, slug):
             comment = form.save(commit=False)
             comment.article_id = article.id
             comment.save()
-            return render_to_response("article.html",
-                                      RequestContext(request, dict(article=article, user=request.user,
-                                          form=PartialCommentForm(initial={'article':article, 'author':request.user}),
-                                          comments=comments)))
+            return HttpResponseRedirect("/articles/%s" % slug)
+            # return render_to_response("article.html",
+            #                           RequestContext(request, dict(article=article, user=request.user,
+            #                               form=PartialCommentForm(initial={'article':article, 'author':request.user}),
+            #                               comments=comments)))
     else:
         user = request.user if request.user else ''
         form = PartialCommentForm(initial={'article':article, 'author':user})
