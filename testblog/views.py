@@ -4,7 +4,8 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth import authenticate, login as auth_login
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
-from django.http import HttpResponseForbidden, HttpResponseRedirect
+from django.http import HttpResponseForbidden, HttpResponseRedirect, HttpResponse
+from django.utils import simplejson
 
 from datetime import datetime
 
@@ -100,21 +101,27 @@ def get_article_by_slug(request, slug):
     article = Articles.objects.get(slug=slug)
     comments = Comments.objects.filter(article=article)
     comment_count = len(comments)
-    if request.method == 'POST':
+    user = request.user if request.user else ''
+    form = PartialCommentForm(initial={'article':article, 'author':user})
+    req_context = RequestContext(request, {'article': article, 'user':request.user, 'form':form, 'comments':comments, 'comment_count': comment_count})
+    return render_to_response("article.html", context_instance=req_context)
+
+
+def add_comment(request, slug):
+    article = Articles.objects.get(slug=slug)
+    if request.method == 'POST' and request.is_ajax():
         form = PartialCommentForm(request.POST)
         if form.is_valid():
             comment = form.save(commit=False)
             comment.article_id = article.id
             comment.save()
-            return HttpResponseRedirect("/articles/%s" % slug)
-            # return render_to_response("article.html",
-            #                           RequestContext(request, dict(article=article, user=request.user,
-            #                               form=PartialCommentForm(initial={'article':article, 'author':request.user}),
-            #                               comments=comments)))
+            output = "Comment: " + comment.body + " By: " + comment.author
+            json = simplejson.dumps(output)
+            return HttpResponse(json, mimetype='application/json')
     else:
         user = request.user if request.user else ''
-        form = PartialCommentForm(initial={'article':article, 'author':user})
-    req_context = RequestContext(request, {'article': article, 'user':request.user, 'form':form, 'comments':comments, 'comment_count': comment_count})
+        form = PartialCommentForm(initial={'article': article, 'author': user})
+        req_context = RequestContext(request, {'article': article, 'user':request.user, 'form':form, 'comments':comments, 'comment_count': comment_count})
     return render_to_response("article.html", context_instance=req_context)
 
 

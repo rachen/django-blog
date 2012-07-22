@@ -2,15 +2,15 @@
 {% block content %}
     <h2>Articles</h2>
     {% for article in articles.object_list %}
-        <h3 style="margin-bottom:5px"><a href="{% url get_article_by_slug article.slug %}">{{ article.title }}
-        -- {{ article.comment_count }} Comments
+        <h3 style="margin-bottom:5px"><a href="{% url get_article_by_slug article.slug %}">
+            {{ article.title }}
         </a></h3>
         Author: {{ article.author }} <br />
         Body: {{ article.body }}<br />
         Created: {{ article.created }}<br />
         Slug: {{ article.slug }}<br />
 
-        <a href="{% url get_article_by_slug article.slug %}">Add comment</a>
+        <a href="{% url get_article_by_slug article.slug %}">{{ article.comment_count }} comments</a>
         {% if user == article.author %}
             | <a href="{% url edit_article article.id %}">Edit</a>
             | <a href="{% url delete_article article.id %}">Remove</a>

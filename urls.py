@@ -30,6 +30,7 @@ urlpatterns = patterns('',
     url(r'^articles/(?P<slug>[-\w]+)/$', 'djblog.testblog.views.get_article_by_slug', name="get_article_by_slug"),
     url(r'^articles/(\d+)/edit$', 'djblog.testblog.views.edit_article', name="edit_article"),
     url(r'^articles/(\d+)/delete$', 'djblog.testblog.views.delete_article', name="delete_article"),
+    url(r'^articles/(?P<slug>[-\w]+)/submit_comment$', 'djblog.testblog.views.add_comment', name="add_comment"),
 )
 
 if settings.DEBUG:

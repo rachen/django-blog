@@ -3,6 +3,21 @@
 {% block title %}DjBlog | {{ article.title }}{% endblock %}
 
 {% block content %}
+    <script>
+        $(document).ready(function() {
+           $('#comment_form').submit(function(){
+               $.ajax({
+                   data: $(this).serialize(),
+                   type: $(this).attr('method'),
+                   url: $(this).attr('action'),
+                   success: function(response){ 
+                            $('#comments').append(response);
+                       }    
+               });
+               return false; 
+           });
+        });        
+    </script>
     <h3>{{ article.title }}</h3> by {{ article.author }}
     <br />
     Created: {{ article.created }}
@@ -17,25 +32,22 @@
     <!-- Comments -->
     {% block comments %}
         <h4>{{ comment_count }} Comments</h4>
+        <div id="comments"></div>
         {% for comment in comments %}
             Comment: {{ comment.body }}
             By: {{ comment.author }}
             <br />
-        {% empty %}
-            No Comments.
         {% endfor %}
         <br />
         <h4>Add A Comment</h4>
-        <form action="" method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <input type="submit" value="Save">
-        </form>
+        <div id="form_container">
+            <form action="/articles/{{ article.slug }}/submit_comment" method="post" id="comment_form">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <input type="submit" value="Save">
+            </form>
+        </div>
     {% endblock %}
 
 {% endblock %}
-
-
-
-
 <!-- Comments  -->

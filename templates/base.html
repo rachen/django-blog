@@ -5,11 +5,13 @@
     <title>{% block title %}Django Test Blog{% endblock %}</title>
     <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
     <link href='/static_media/css/testblog.css' rel='stylesheet' type='text/css'>
+    <script type="text/javascript" src="/static_media/jquery-1.2.6.min.js"></script>
 </head>
 <body>
     <a href="/"><h1>Django Test Blog</h1></a>
     {% if user.is_anonymous %}
-        <a href="{% url login %}">Login</a>
+        <a href="{% url login %}">Login</a> | 
+        <a href="{% url register %}">Register</a>
     {% else %}
         Logged in as {{ user }} | 
         <a href="{% url add_article %}">Add Articles</a> |
