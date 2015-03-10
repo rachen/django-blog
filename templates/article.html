@@ -10,13 +10,18 @@
                    data: $(this).serialize(),
                    type: $(this).attr('method'),
                    url: $(this).attr('action'),
-                   success: function(response){ 
-                            $('#comments').append(response);
-                       }    
+                   success: function(response){
+                            $('#comments').append(response, '<br/>');
+                            var count = $('#comment-count').text();
+                            count = parseInt(count) + 1;
+                            console.log(count);
+                            $('#comment-count').text(count);
+                            $('#id_body').val('');
+                       }
                });
-               return false; 
+               return false;
            });
-        });        
+        });
     </script>
     <h3>{{ article.title }}</h3> by {{ article.author }}
     <br />
@@ -31,13 +36,14 @@
 
     <!-- Comments -->
     {% block comments %}
-        <h4>{{ comment_count }} Comments</h4>
-        <div id="comments"></div>
+        <h4><span id="comment-count">{{ comment_count }}</span> Comments</h4>
+        <div id="comments">
         {% for comment in comments %}
             Comment: {{ comment.body }}
             By: {{ comment.author }}
             <br />
         {% endfor %}
+        </div>
         <br />
         <h4>Add A Comment</h4>
         <div id="form_container">

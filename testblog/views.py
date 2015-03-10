@@ -14,7 +14,7 @@ from testblog.forms import *
 
 def index(request):
     # For the index
-    articles = Articles.objects.all().order_by('-created')
+    articles = Article.objects.all().order_by('-created')
     for article in articles:
         setattr(article, 'comment_count', article.get_comment_count())
     paginator = Paginator(articles, 2)
@@ -91,24 +91,24 @@ def add_article(request):
 
 def get_article(request, article_id=None, slug=None):
     if article_id:
-        article = Articles.objects.get(id=article_id)
+        article = Article.objects.get(id=article_id)
     elif slug:
-        article = Articles.objects.get(slug=slug)
-    return render_to_response("article.html", {'article': article, 'user':request.user})
+        article = Article.objects.get(slug=slug)
+    return get_article_by_slug(request, article.slug, article)
 
 
-def get_article_by_slug(request, slug):
-    article = Articles.objects.get(slug=slug)
-    comments = Comments.objects.filter(article=article)
-    comment_count = len(comments)
+def get_article_by_slug(request, slug, article=None):
+    if article is None:
+        article = Article.objects.get(slug=slug)
+    comments = Comment.objects.filter(article=article)
     user = request.user if request.user else ''
-    form = PartialCommentForm(initial={'article':article, 'author':user})
-    req_context = RequestContext(request, {'article': article, 'user':request.user, 'form':form, 'comments':comments, 'comment_count': comment_count})
+    form = PartialCommentForm(initial={'article': article, 'author': user})
+    req_context = RequestContext(request, {'article': article, 'user': request.user, 'form': form, 'comments': comments, 'comment_count': article.get_comment_count()})
     return render_to_response("article.html", context_instance=req_context)
 
 
 def add_comment(request, slug):
-    article = Articles.objects.get(slug=slug)
+    article = Article.objects.get(slug=slug)
     if request.method == 'POST' and request.is_ajax():
         form = PartialCommentForm(request.POST)
         if form.is_valid():
@@ -116,7 +116,7 @@ def add_comment(request, slug):
             comment.article_id = article.id
             comment.save()
             output = "Comment: " + comment.body + " By: " + comment.author
-            json = simplejson.dumps(output)
+            json = simplejson.dumps(output).strip('"') + '\n'
             return HttpResponse(json, mimetype='application/json')
     else:
         user = request.user if request.user else ''
@@ -127,7 +127,7 @@ def add_comment(request, slug):
 
 @login_required
 def edit_article(request, article_id):
-    article = Articles.objects.get(id=article_id)
+    article = Article.objects.get(id=article_id)
     if request.user.id != article.author.id:
         return HttpResponseForbidden('Forbidden!')
     if request.method == 'POST':
@@ -138,12 +138,13 @@ def edit_article(request, article_id):
             # Possibly update created time
     else:
         form = PartialArticleForm(instance=article)
-    req_context = RequestContext(request, {'article':article, 'form':form, 'editing': True })
+    req_context = RequestContext(request, {'article': article, 'form': form, 'editing': True})
     return render_to_response("add_edit_article.html", context_instance=req_context)
+
 
 @login_required
 def delete_article(request, article_id):
-    article = Articles.objects.get(id=article_id)
+    article = Article.objects.get(id=article_id)
     if request.user.id != article.author.id:
         return HttpResponseForbidden('Forbidden!')
     else:

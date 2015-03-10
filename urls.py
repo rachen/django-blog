@@ -6,8 +6,8 @@ import settings
 
 
 # Uncomment the next two lines to enable the admin:
-# from django.contrib import admin
-# admin.autodiscover()
+from django.contrib import admin
+admin.autodiscover()
 
 # Examples:
 # url(r'^$', 'djblog.views.home', name='home'),
@@ -17,10 +17,10 @@ import settings
 # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
 # Uncomment the next line to enable the admin:
-# url(r'^admin/', include(admin.site.urls)),
 
 urlpatterns = patterns('',
 #    url(r'^$', direct_to_template, {"template": "index.html"}, name="index"),
+    url(r'^admin/', include(admin.site.urls)),
     url(r'^$', "djblog.testblog.views.index"),
     url(r'^accounts/login/$', 'djblog.testblog.views.login', name="login"),
     url(r'^accounts/register/$', 'djblog.testblog.views.register', name="register"),

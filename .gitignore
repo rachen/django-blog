@@ -1,2 +1,5 @@
 *.pyc
 *.idea
+*.git
+venv
+*.sublime*

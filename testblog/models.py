@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
-class Articles(models.Model):
+class Article(models.Model):
     title = models.CharField(max_length=80)
     body = models.TextField()
     slug = models.SlugField()
@@ -13,16 +13,12 @@ class Articles(models.Model):
         return self.title
 
     def get_comment_count(self):
-        return len(Comments.objects.filter(article=self))
+        return len(Comment.objects.filter(article=self))
 
 
-class Comments(models.Model):
-    article = models.ForeignKey(Articles)
+class Comment(models.Model):
+    article = models.ForeignKey(Article)
     body = models.TextField(blank=True)
     created = models.DateTimeField(auto_now_add=True)
     author = models.CharField(max_length=80, blank=True)
-
-
-
-
 

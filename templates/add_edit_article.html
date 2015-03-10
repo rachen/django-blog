@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 
-{% block title %}Add Articles{% endblock %}
+{% block title %}Add Article{% endblock %}
 
 {% block content %}
-<h2>{% if editing %} Edit {% else %} Add {% endif %} Articles</h2>
+<h2>{% if editing %} Edit {% else %} Add {% endif %} Article</h2>
 
 <form action="" method="post">
     {% csrf_token %}

@@ -16,7 +16,7 @@ DATABASES = {
         'NAME': 'djblog',                      # Or path to database file if using sqlite3.
         'USER': 'raymond',                      # Not used with sqlite3.
         'PASSWORD': '1',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
+        'HOST': 'localhost',                      # Set to empty string for localhost. Not used with sqlite3.
         'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
     }
 }
@@ -114,15 +114,15 @@ TEMPLATE_DIRS = (
 )
 
 INSTALLED_APPS = (
+    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
+    'django.contrib.messages',
     'django.contrib.sessions',
     'django.contrib.sites',
-    'django.contrib.messages',
     'django.contrib.staticfiles',
     'testblog',
     # Uncomment the next line to enable the admin:
-    # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 )
@@ -150,7 +150,7 @@ LOGGING = {
     }
 }
 
-# Heroku stuff
+# Heroku DB stuff
 
 import sys
 import urlparse
@@ -161,32 +161,31 @@ import os
 urlparse.uses_netloc.append('postgres')
 urlparse.uses_netloc.append('mysql')
 
-try:
+# try:
+#     # Check to make sure DATABASES is set in settings.py file.
+#     # If not default to {}
 
-    # Check to make sure DATABASES is set in settings.py file.
-    # If not default to {}
+#     if 'DATABASES' not in locals():
+#         DATABASES = {}
 
-    if 'DATABASES' not in locals():
-        DATABASES = {}
+#     if 'DATABASE_URL' in os.environ:
+#         url = urlparse.urlparse(os.environ['DATABASE_URL'])
 
-    if 'DATABASE_URL' in os.environ:
-        url = urlparse.urlparse(os.environ['DATABASE_URL'])
+#         # Ensure default database exists.
+#         DATABASES['default'] = DATABASES.get('default', {})
 
-        # Ensure default database exists.
-        DATABASES['default'] = DATABASES.get('default', {})
+#         # Update with environment configuration.
+#         DATABASES['default'].update({
+#             'NAME': url.path[1:],
+#             'USER': url.username,
+#             'PASSWORD': url.password,
+#             'HOST': url.hostname,
+#             'PORT': url.port,
+#         })
+#         if url.scheme == 'postgres':
+#             DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql_psycopg2'
 
-        # Update with environment configuration.
-        DATABASES['default'].update({
-            'NAME': url.path[1:],
-            'USER': url.username,
-            'PASSWORD': url.password,
-            'HOST': url.hostname,
-            'PORT': url.port,
-        })
-        if url.scheme == 'postgres':
-            DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql_psycopg2'
-
-        if url.scheme == 'mysql':
-            DATABASES['default']['ENGINE'] = 'django.db.backends.mysql'
-except Exception:
-    print 'Unexpected error:', sys.exc_info()
+#         if url.scheme == 'mysql':
+#             DATABASES['default']['ENGINE'] = 'django.db.backends.mysql'
+# except Exception:
+#     print 'Unexpected error:', sys.exc_info()
